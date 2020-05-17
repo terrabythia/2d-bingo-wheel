@@ -1,12 +1,32 @@
-import {Wheel} from './wheel/canvas';
 
-Wheel({
-    element: '#wheel'
-}).then((wheel) => {
-    console.log(wheel);
-    // setInterval(() => {
-    //     if (null === wheel.randomBall()) {
-    //         window.location.reload();
-    //     }
-    // }, 1000);
+import {
+    Wheel as _Wheel,
+    WheelProps
+} from './wheel/wheel';
+
+import {
+    DEFAULT_WHEEL_RADIUS,
+    DEFAULT_NR_OF_BALLS,
+    DEFAULT_BALL_RADIUS,
+    DEFAULT_CANVAS_WIDTH,
+    DEFAULT_CANVAS_HEIGHT
+} from './constants';
+
+// These variables seem to work the best out of the box
+// to set your custom config, import the wheel from ./wheel/wheel
+
+
+const defaultProps: Partial<WheelProps> = {
+    wheelRadius: DEFAULT_WHEEL_RADIUS,
+    nrOfBalls: DEFAULT_NR_OF_BALLS,
+    ballRadius: DEFAULT_BALL_RADIUS,
+    canvasWidth: DEFAULT_CANVAS_WIDTH,
+    canvasHeight: DEFAULT_CANVAS_HEIGHT,
+};
+
+export const Wheel = ({
+    element
+}) => _Wheel({
+    ...defaultProps,
+    ...element,
 });

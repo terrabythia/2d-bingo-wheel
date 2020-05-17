@@ -1,5 +1,5 @@
 import Matter from 'matter-js';
-import { BALL_BODY_MASS } from '../../constants';
+import { BALL_BODY_MASS, BALL_BODY_DENSITY } from '../../constants';
 
 type BallBodyProps = {
     radius: number;
@@ -16,7 +16,7 @@ const defaultBallBodyProps: Partial<BallBodyProps> = {
 };
 
 
-export const BallBody = (props: Partial<BallBodyProps> = {}, matterBodyOpts = {}) => {
+export const BallBody = (props: Partial<BallBodyProps> = {}) => {
 
     const p = {
         ...defaultBallBodyProps,
@@ -38,9 +38,9 @@ export const BallBody = (props: Partial<BallBodyProps> = {}, matterBodyOpts = {}
         {
             restitution: 1,
             mass: BALL_BODY_MASS,
+            density: BALL_BODY_DENSITY,
             friction: 0.2,
             ...renderObj,
-            ...matterBodyOpts,
         }
     );
 

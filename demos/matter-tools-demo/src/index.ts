@@ -233,8 +233,6 @@ const onWindowLoad = async () => {
         img
       );
 
-      debugInterface.nrOfBalls = debugInterface.nrOfBalls - 1;
-
     },
   };
 

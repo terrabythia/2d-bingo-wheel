@@ -1,7 +1,6 @@
 
 import {
-    Wheel as _Wheel,
-    WheelProps
+    Wheel as _Wheel
 } from './wheel/wheel';
 
 import {
@@ -16,7 +15,7 @@ import {
 // to set your custom config, import the wheel from ./wheel/wheel
 
 
-const defaultProps: Partial<WheelProps> = {
+const defaultProps = {
     wheelRadius: DEFAULT_WHEEL_RADIUS,
     nrOfBalls: DEFAULT_NR_OF_BALLS,
     ballRadius: DEFAULT_BALL_RADIUS,
@@ -26,7 +25,7 @@ const defaultProps: Partial<WheelProps> = {
 
 export const Wheel = ({
     element
-}) => _Wheel({
+}: { element: string | HTMLElement }) => _Wheel({
     ...defaultProps,
-    ...element,
+    element,
 });

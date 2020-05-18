@@ -4,7 +4,7 @@ import { BallBody } from './bodies/ball';
 import { WheelBodyArr } from './bodies/wheel';
 
 export type WheelProps = {
-    element: string | HTMLCanvasElement;
+    element: string | HTMLElement;
     canvasWidth: number;
     canvasHeight: number;
     wheelRadius: number;
@@ -29,9 +29,6 @@ export const Wheel =
             World = Matter.World,
             Bodies = Matter.Bodies;
 
-        console.log(Object.getOwnPropertyNames(Matter.Body));
-
-        // now create a canvas
 
         const engine = Engine.create();
         const world = engine.world;
@@ -47,6 +44,7 @@ export const Wheel =
             }
         });
 
+        // TODO: create dynamic ground based on props
         const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
         World.add(world, [
@@ -132,7 +130,7 @@ export const Wheel =
         const runner = Runner.create();
         Runner.run(runner, engine);
 
-        // TODO: after render event: draw images
+        // TODO: after render event: draw images on top
         // Matter.Events.on(render, 'afterRender', (event) => {
         //     const {
         //         canvas,
@@ -140,10 +138,6 @@ export const Wheel =
         //     } = event.source;
         //     // draw image of the 'wheel' ?
         // });
-
-
-
-        // create the balls
 
         return {
 

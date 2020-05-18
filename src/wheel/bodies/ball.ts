@@ -1,5 +1,5 @@
 import Matter from 'matter-js';
-import { BALL_BODY_MASS, BALL_BODY_DENSITY } from '../../constants';
+import { BALL_BODY_MASS, BALL_BODY_DENSITY, DEFAULT_BALL_RADIUS } from '../../constants';
 
 type BallBodyProps = {
     radius: number;
@@ -9,7 +9,7 @@ type BallBodyProps = {
 }
 
 const defaultBallBodyProps: Partial<BallBodyProps> = {
-    radius: 16,
+    radius: DEFAULT_BALL_RADIUS,
     texture: null,
     xPosition: 0,
     yPosition: 0,

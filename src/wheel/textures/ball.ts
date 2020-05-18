@@ -18,7 +18,6 @@ type BaseBallTextureProps = {
     fontXOffset?: number;
     fontYOffset?: number;
 };
-// TODO: create fn to create single ballTexture (for debugging)
 
 type BallTextureProps = {
     textContent: string;

@@ -13,7 +13,9 @@ import {
   DEFAULT_CANVAS_WIDTH,
   BALL_BODY_MASS,
   BALL_BODY_DENSITY,
-  DEFAULT_NR_OF_BALLS
+  DEFAULT_NR_OF_BALLS,
+  DEFAULT_COLLISION_LAYERS,
+  COLLISION_LAYER_CATEGORIES,
 } from '../../../src/constants';
 
 const MAX_NR_OF_BALLS = 200;
@@ -22,6 +24,9 @@ const GOOGLE_FONT_FAMILY = 'Droid Sans';
 
 const timeout = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Use WebfontLoader to load a font before creating the balls
+ */
 const loadCustomFont = () =>
   new Promise((resolve) => {
     WebFont.load({
@@ -48,7 +53,8 @@ const onWindowLoad = async () => {
     canvasWidth: DEFAULT_CANVAS_WIDTH,
     canvasHeight: DEFAULT_CANVAS_HEIGHT,
     wheelRadius: DEFAULT_WHEEL_RADIUS,
-    ballRadius: DEFAULT_BALL_RADIUS
+    ballRadius: DEFAULT_BALL_RADIUS,
+    collisionLayers: DEFAULT_COLLISION_LAYERS,
   });
 
   // get internals for debug purposes
@@ -68,6 +74,7 @@ const onWindowLoad = async () => {
   const debugInterface = {
     _ballIndex: 1,
     _nrOfBalls: DEFAULT_NR_OF_BALLS,
+    _collisionLayers: DEFAULT_COLLISION_LAYERS,
     _ballRadius: DEFAULT_BALL_RADIUS,
     _ballMass: BALL_BODY_MASS,
     _ballDensity: BALL_BODY_DENSITY,
@@ -76,6 +83,12 @@ const onWindowLoad = async () => {
     },
     get nrOfBalls() {
       return this._nrOfBalls;
+    },
+    set collisionLayers(n: number) {
+      this._collisionLayers = Math.ceil(n);
+    },
+    get collisionLayers() {
+      return this._collisionLayers;
     },
     set ballMass(m: number) {
       this._ballMass = m;
@@ -97,11 +110,20 @@ const onWindowLoad = async () => {
     }
   };
 
+  const getRandomCollisionCategory = (nrOfCategories: number = DEFAULT_COLLISION_LAYERS) => {
+    const maxIndex = Math.min(nrOfCategories, COLLISION_LAYER_CATEGORIES.length);
+    return COLLISION_LAYER_CATEGORIES[Math.floor(Math.random() * maxIndex)];
+  };
+
   const createBall = async (index: number) => {
 
     const texture = await BallTexture({
       textContent: `${index + 1}`,
       radius: debugInterface.ballRadius,
+      fontFamily: GOOGLE_FONT_FAMILY,
+      fontYOffset: 2,
+      fontSize: 15,
+      fontFillStyle: 'rgba(0, 0, 0, 0.7)'
     });
 
     const ball = BallBody({
@@ -109,7 +131,10 @@ const onWindowLoad = async () => {
       texture,
       xPosition: render.canvas.clientWidth / 2,
       yPosition: 100,
+      collisionCategory: getRandomCollisionCategory(debugInterface.collisionLayers),
     });
+
+    console.log(getRandomCollisionCategory(debugInterface.collisionLayers));
 
     return ball;
 
@@ -177,19 +202,11 @@ const onWindowLoad = async () => {
 
         Matter.World.remove(world, ball);
 
-        const texture = await BallTexture({
-          textContent: `${i + 1}`,
-          radius: debugInterface.ballRadius,
-        });
-
-        ball = BallBody({
-          radius: debugInterface.ballRadius,
-          texture,
-          xPosition: render.canvas.clientWidth / 2,
-          yPosition: 100,
-        });
+        ball = createBall(debugInterface._ballIndex);
 
         Matter.World.add(world, ball);
+
+        debugInterface._ballIndex++;
 
         await timeout(50);
 
@@ -214,11 +231,38 @@ const onWindowLoad = async () => {
 
   gui.add(debugInterface, 'ballDensity');
 
+  const mixerTimelineInterface = {
+      get mixerPaused(): boolean {
+        return wheel.mixerTimeline.paused;
+      },
+      set mixerPaused(b: boolean) {
+        this.mixerPaused ? wheel.mixerTimeline.play() : wheel.mixerTimeline.pause();
+      },
+      get mixerReversed(): boolean {
+        return wheel.mixerTimeline.reversed;
+      },
+      set mixerReversed(b: boolean) {
+        wheel.mixerTimeline.reverse();
+      },
+      get mixerTimeScale() {
+        return wheel.mixerTimeline.timeScale;
+      },
+      set mixerTimeScale(t: number) {
+        wheel.mixerTimeline.timeScale = Math.max(0.1, t);
+      }
+  };
+
+  gui.add(mixerTimelineInterface, 'mixerPaused');
+  gui.add(mixerTimelineInterface, 'mixerReversed');
+  gui.add(mixerTimelineInterface, 'mixerTimeScale', 0.1, 3);
+
   const ballsEl = document.querySelector('#balls');
   const customFnsInterface = {
     pickBall() {
 
       const randomIndex = Math.floor(Math.random() * balls.length);
+
+      // pull random ball from balls
       const ball = balls.splice(randomIndex, 1)[0];
 
       // remove from world also
@@ -227,11 +271,16 @@ const onWindowLoad = async () => {
         ball
       );
 
+      // add the texture as an image to the dom
       const img = document.createElement('img');
       img.src = ball.render.sprite.texture;
       ballsEl.appendChild(
         img
       );
+
+      // TODO: add a map with metadata (such as the number of the ball)
+      // TODO: in some way create a bingo card overview
+      // TODO: randomly generate bingo cards? 
 
     },
   };

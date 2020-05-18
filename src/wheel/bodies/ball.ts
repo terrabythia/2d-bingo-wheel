@@ -1,11 +1,12 @@
 import Matter from 'matter-js';
-import { BALL_BODY_MASS, BALL_BODY_DENSITY, DEFAULT_BALL_RADIUS } from '../../constants';
+import { BALL_BODY_MASS, BALL_BODY_DENSITY, DEFAULT_BALL_RADIUS, BALL_BODY_FRICTION } from '../../constants';
 
 type BallBodyProps = {
     radius: number;
     texture: null | string;
     xPosition: number;
     yPosition: number;
+    collisionCategory: null | number;
 }
 
 const defaultBallBodyProps: Partial<BallBodyProps> = {
@@ -14,7 +15,6 @@ const defaultBallBodyProps: Partial<BallBodyProps> = {
     xPosition: 0,
     yPosition: 0,
 };
-
 
 export const BallBody = (props: Partial<BallBodyProps> = {}) => {
 
@@ -34,13 +34,24 @@ export const BallBody = (props: Partial<BallBodyProps> = {}) => {
         }
     }
 
+    let collisionFilterObj = {};
+    if (p.collisionCategory) {
+        collisionFilterObj = {
+            collisionFilter: {
+                category: p.collisionCategory,
+                mask: 0x0001 | p.collisionCategory,
+            }
+        }
+    }
+
     const ball = Matter.Bodies.circle(p.xPosition, p.yPosition, p.radius,
         {
             restitution: 1,
             mass: BALL_BODY_MASS,
             density: BALL_BODY_DENSITY,
-            friction: 0.2,
+            friction: BALL_BODY_FRICTION,
             ...renderObj,
+            ...collisionFilterObj
         }
     );
 

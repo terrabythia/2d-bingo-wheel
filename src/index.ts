@@ -8,7 +8,8 @@ import {
     DEFAULT_NR_OF_BALLS,
     DEFAULT_BALL_RADIUS,
     DEFAULT_CANVAS_WIDTH,
-    DEFAULT_CANVAS_HEIGHT
+    DEFAULT_CANVAS_HEIGHT,
+    DEFAULT_COLLISION_LAYERS
 } from './constants';
 
 // These variables seem to work the best out of the box
@@ -21,6 +22,7 @@ const defaultProps = {
     ballRadius: DEFAULT_BALL_RADIUS,
     canvasWidth: DEFAULT_CANVAS_WIDTH,
     canvasHeight: DEFAULT_CANVAS_HEIGHT,
+    collisionLayers: DEFAULT_COLLISION_LAYERS,
 };
 
 export const Wheel = ({

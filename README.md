@@ -11,5 +11,7 @@ Uses the brilliant matter-js library for physics simulation: https://brm.io/matt
 Uses this free vector art for the different color balls: https://www.vecteezy.com/vector-art/91068-lotto-bingo-balls-vector-free
 
 ## TODO
-- Maybe use collision filtering so the balls have some 3D effect to them and there fit more in one bowl (based on color or random?) (prop: how many 'layers')
+- Implement (optional) multiple collision layers into wheel
 - Add image of wheel on top of canvas (optional)
+- Ground (if needed?): make responsive based on canvas width and height
+

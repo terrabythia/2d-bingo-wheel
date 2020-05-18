@@ -1,10 +1,16 @@
 import Matter from 'matter-js';
-import { createBallTextures } from './textures/ball';
+import { BallTexture } from './textures/ball';
 import { BallBody } from './bodies/ball';
 import { WheelBodyArr } from './bodies/wheel';
 import { Timeline } from '../animations/timeline';
 import { MixerBody } from './bodies/mixer';
-import { MIXER_360_ANIMATION_DURATION } from '../constants';
+import { MIXER_360_ANIMATION_DURATION, COLLISION_LAYER_CATEGORIES } from '../constants';
+
+export type BallData = {
+    number: number;
+    textureImgData: string;
+    createTextureOfSize: (size: number) => Promise<string>;
+}
 
 export type WheelProps = {
     element: string | HTMLElement;
@@ -16,8 +22,19 @@ export type WheelProps = {
     collisionLayers: number;
 };
 
+const createBallTexture = (textContent: string) => (radius: number) =>
+    BallTexture({ radius, textContent });
+
 export const Wheel =
     async ({ element, ...config }: WheelProps) => {
+
+        const balls = new Map<Matter.Body, BallData>();
+
+
+        const getRandomCollisionCategory = () => {
+            const maxIndex = Math.min(config.collisionLayers, COLLISION_LAYER_CATEGORIES.length);
+            return COLLISION_LAYER_CATEGORIES[Math.floor(Math.random() * maxIndex)];
+        };
 
         let el: HTMLElement;
         if ('string' === typeof element) {
@@ -77,9 +94,11 @@ export const Wheel =
             height: config.canvasHeight * 0.8
         });
 
-        World.add(world, [mixer]);
+        World.add(
+            world,
+            [mixer]
+        );
 
-        // TODO: how to make this controlable by the demo interface?
         const timeline = Timeline(MIXER_360_ANIMATION_DURATION, (progress) => {
 
             const angle = startAngle + (progress * 360) * (Math.PI / 180);
@@ -87,46 +106,41 @@ export const Wheel =
 
         });
 
-        // setInterval(() => timeline.reverse(), 2000);
-
-        // // make this a simple timeline with speed and play/pause
-        // setInterval(() => {
-        //     stirAngle += 0.03;
-        //     Matter.Body.setAngle(stir, stirAngle);
-        //     // Matter.Body.setHeight(stir, Math.random() * 300);
-        // }, 10);
-
-        const ballRadius = config.wheelRadius;
-        const balls = new Map<Matter.Body, any>();
+        const ballRadius = config.ballRadius;
 
         if (config.nrOfBalls > 0) {
 
-            const ballTextures = await createBallTextures(
-                config.nrOfBalls,
-                {
-                    radius: ballRadius,
-                }
-            );
-            
-            // textures are ready
-            for (let ballTexture of ballTextures) {
+            for (let i = 0; i < config.nrOfBalls; i++) {
 
+                const texture = await BallTexture({
+                    textContent: `${i + 1}`,
+                    radius: ballRadius,
+                });
+
+                // TODO: arange them in a circle again?
                 const ball = BallBody({
-                    texture: ballTexture,
+                    texture,
                     radius: ballRadius,
                     xPosition: Math.floor(config.canvasWidth / 2),
                     yPosition: Math.floor(config.canvasHeight / 2),
+                    ...(config.collisionLayers > 1 ? { collisionCategory: getRandomCollisionCategory() } : {})
                 });
 
                 balls.set(ball, {
-                    imgData: ballTexture,
+                    number: i + 1,
+                    textureImgData: texture,
+                    createTextureOfSize: createBallTexture(`${i + 1}`),
                 });
+
+                i++;
 
             }
 
+            console.log(balls);
+
             World.add(
                 world,
-                balls.keys()
+                Array.from(balls.keys())
             );
 
         }
@@ -153,19 +167,20 @@ export const Wheel =
 
         return {
 
-            randomBall() {
+            randomBall(): BallData | null {
                 // get ball and remove it from the world!
                 if (balls.size === 0) {
                     return null;
                 }
                 const randomIndex = Math.floor(Math.random() * balls.size);
-                const randomBall = [...balls.keys()].splice(randomIndex, 1)[0];
+                const randomBall = Array.from(balls.keys()).splice(randomIndex, 1)[0];
                 const ballMetadata = balls.get(randomBall);
                 World.remove(world, randomBall);
                 balls.delete(randomBall);
                 return ballMetadata;
             },
             mixerTimeline: timeline,
+            canvas: render.canvas,
             _internals: {
                 engine,
                 world,

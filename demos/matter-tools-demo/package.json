@@ -1,7 +1,7 @@
 {
   "name": "matter-tools-demo",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "dev": "parcel index.html",

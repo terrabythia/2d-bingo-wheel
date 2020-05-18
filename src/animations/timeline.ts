@@ -43,25 +43,25 @@ export const Timeline = (durationMs: number, updateCallback: UpdateCallback, pro
 
         const delta = now - prevDelta;
         prevDelta = now;
-        
+
         if (!isPaused) {
-            
+
             timeElapsed += (delta / timeScale) * (isReversed ? -1 : 1);
             if (timeElapsed > durationMs) {
                 timeElapsed = 0;
             }
             const progress = timeElapsed / durationMs;
-    
+
             updateCallback(progress);
 
-        }       
+        }
 
         requestAnimationFrame(update);
 
     };
 
     requestAnimationFrame(update);
-   
+
     return {
         reset() {
             timeElapsed = 0;
@@ -84,12 +84,11 @@ export const Timeline = (durationMs: number, updateCallback: UpdateCallback, pro
         },
         set timeScale(t: number) {
             timeScale = t;
-            // update!
         },
         get timeScale() {
             return timeScale;
         },
-    
+
     };
 
 };

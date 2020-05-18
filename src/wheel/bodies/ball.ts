@@ -1,5 +1,5 @@
 import Matter from 'matter-js';
-import { BALL_BODY_MASS, BALL_BODY_DENSITY, DEFAULT_BALL_RADIUS, BALL_BODY_FRICTION } from '../../constants';
+import { BALL_BODY_MASS, BALL_BODY_DENSITY, DEFAULT_BALL_RADIUS, BALL_BODY_FRICTION, BALL_BODY_RESTITUTION } from '../../constants';
 
 type BallBodyProps = {
     radius: number;
@@ -46,7 +46,7 @@ export const BallBody = (props: Partial<BallBodyProps> = {}) => {
 
     const ball = Matter.Bodies.circle(p.xPosition, p.yPosition, p.radius,
         {
-            restitution: 1,
+            restitution: BALL_BODY_RESTITUTION,
             mass: BALL_BODY_MASS,
             density: BALL_BODY_DENSITY,
             friction: BALL_BODY_FRICTION,

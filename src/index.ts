@@ -15,7 +15,6 @@ import {
 // These variables seem to work the best out of the box
 // to set your custom config, import the wheel from ./wheel/wheel
 
-
 const defaultProps = {
     wheelRadius: DEFAULT_WHEEL_RADIUS,
     nrOfBalls: DEFAULT_NR_OF_BALLS,
@@ -24,6 +23,8 @@ const defaultProps = {
     canvasHeight: DEFAULT_CANVAS_HEIGHT,
     collisionLayers: DEFAULT_COLLISION_LAYERS,
 };
+
+console.log('create wheel', { defaultProps });
 
 export const Wheel = ({
     element
